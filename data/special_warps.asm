@@ -35,6 +35,7 @@ MapSpecPointers:
 	dw EeveeHouseSpec
 	dw LaprasRoomSpec
 	dw SafariZoneSpec
+	dw Tower7Spec
 
 ;Format:
 ;	db Map_id
@@ -64,6 +65,12 @@ SafariZoneSpec:
 	FLYWARP_DATA FUCHSIA_CITY_WIDTH,4,18
 	db OVERWORLD
 	db FUCHSIA_CITY
+	
+Tower7Spec:
+	db POKEMONTOWER_7
+	FLYWARP_DATA POKEMONTOWER_7_WIDTH,4,10
+	db CEMETERY
+	db LAVENDER_TOWN
 	
 ;Format:
 ;	db Map_id
