@@ -662,7 +662,7 @@ OptionsMenu_StartIn:
 	jr .leftOrRightNotPressed
 .pressedRight
 	ld a, c
-	cp 3
+	cp 4
 	jr c, .noWrapAround
 	ld c, -1
 .noWrapAround
@@ -699,6 +699,7 @@ OptionsStartInStringsPointerTable:
 	dw StartInEeveeHouseText
 	dw StartInSilphLaprasText
 	dw StartInSafariZoneText
+	dw StartInTowerText
 	
 StartInNormalText:
 	db "NORMAL@"
@@ -711,6 +712,9 @@ StartInSilphLaprasText:
 
 StartInSafariZoneText:
 	db "SAFARI@"
+	
+StartInTowerText:
+	db "TOWER @"
 	
 OptionsMenu_SelectTo:
 	ld a, [wOptions3]
