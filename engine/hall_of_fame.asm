@@ -48,9 +48,17 @@ AnimateHallOfFame: ; 701a0 (1c:41a0)
 	ld [wHoFMonSpecies], a
 	ld a, c
 	ld [wHoFPartyMonIndex], a
-	ld hl, wPartyMon1Level
+	ld hl, wPartyMon1;ANM-I'm removing "Level" from this and will add this later. I want to store the value so I can use it later
 	ld bc, wPartyMon2 - wPartyMon1
 	call AddNTimes
+	
+	;ANM -because I changed the wPartyMon1Level to wPartyMon1,
+	;I can now push the location of the current mon. 
+	;But I have to add back up to get to level
+	push hl
+	ld bc, wPartyMon1Level - wPartyMon1
+	add hl,bc
+	
 	ld a, [hl]
 	ld [wHoFMonLevel], a
 	call HoFShowMonOrPlayer
@@ -61,9 +69,13 @@ AnimateHallOfFame: ; 701a0 (1c:41a0)
 	ld b, $3
 	ld c, $e
 	call TextBoxBorder
-	coord hl, 4, 15
-	ld de, HallOfFameText
-	call PlaceString
+
+	
+	;ANM-draw the DVs
+	pop hl;lets get the hl that points to the current partymon
+	call DrawDVs
+	
+	
 	ld c, 180
 	call DelayFrames
 	call GBFadeOutToWhite
@@ -91,8 +103,60 @@ AnimateHallOfFame: ; 701a0 (1c:41a0)
 	res 3, [hl]
 	ret
 
-HallOfFameText: ; 7026b (1c:426b)
-	db "HALL OF FAME@"
+	;ANM -Draw DVs for current pokemon
+DrawDVs::
+	ld de, wPartyMon1DVs - wPartyMon1;loading the difference into a different reg
+	add hl, de;hl pointed to the level of the current mon. now it points to the first dv
+	ld a, [hl];get the first byte that contains 2 dvs
+	swap a;the first dv is in the most significant 4 bits
+	and $f;get rid of those pesky 4 bits
+	ld [wBuffer], a;store the dv value in a buffer
+	ld a, [hli];repeat but for the other dv in the first byte
+	and $f;^ also go to the next DV
+	ld [wBuffer+1], a
+	;Repeat above but with the next byte (two DVs)
+	;This would be a loop if I could get it to work without creating 20 extrea lines
+	ld a, [hl]
+	swap a
+	and $f
+	ld [wBuffer+2], a
+	ld a, [hl]
+	and $f
+	ld [wBuffer+3], a
+
+	ld c, 2 ;there are a maximum of 2 digits per dv
+	ld b, LEFT_ALIGN | 1;sets some flags or something, copied from printLevel
+	coord hl, 4, 15 ;set the x and y location in hl, this is taken from the original "Hall Of Fame" drawer
+	ld de, wBuffer;//make de point to wBuffer	
+	
+.startDrawDVs
+	push de;PrintNumber and PlaceString modify this but I need it
+	call PrintNumber	
+	
+	;check if we've just printed the last DV
+	push bc;push bc because we still need the flags
+	ld bc, wBuffer + 2;load the target value to bc (i.e. if(bc == de))
+	ld a, c;we can only sub 1 byte from a. c and e can only be a maximum of 4 different, we don't need to check much
+	sub e
+	pop bc;this should not affect the flags
+	jr z, .finishDrawDVs;if we're at wBuffer+2 then we can go ahead and finish up
+	
+	ld de, SlashText;we didn't finish, let's load the slash sign into memory
+	push bc;place string messes up our flags
+	call PlaceString;place the / on screen
+	pop bc;bring back our flags
+	inc hl;for some reason PlaceString does not move where you're going to draw, so I had to move it one unit to the right manually
+	pop de;get back the location of the last DV we drew
+	inc de;move on to the next DV
+	jr .startDrawDVs;start the DV drawing process again!
+	
+.finishDrawDVs;We're done drawing them!
+	pop de;We need to fix our pushpops for other scripts to work
+	ret;return to the Hall Of Fame code
+
+SlashText:;As far as I know, this is the way you have to do it because you also need the @, but I'm not sure
+	db "/@"
+	;End ANM code
 
 HoFShowMonOrPlayer: ; 70278 (1c:4278)
 	call ClearScreen
