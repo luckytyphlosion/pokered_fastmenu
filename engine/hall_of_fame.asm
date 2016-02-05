@@ -128,22 +128,22 @@ DrawDVs::
 	ld b, LEFT_ALIGN | 1;sets some flags or something, copied from printLevel
 	coord hl, 4, 15 ;set the x and y location in hl, this is taken from the original "Hall Of Fame" drawer
 	ld de, wBuffer;//make de point to wBuffer	
-	
+	ld a, $4
 .startDrawDVs
 	push de;PrintNumber and PlaceString modify this but I need it
+	push af
 	call PrintNumber	
+	pop af
 	
 	;check if we've just printed the last DV
-	push bc;push bc because we still need the flags
-	ld bc, wBuffer + 2;load the target value to bc (i.e. if(bc == de))
-	ld a, c;we can only sub 1 byte from a. c and e can only be a maximum of 4 different, we don't need to check much
-	sub e
-	pop bc;this should not affect the flags
+	dec a
 	jr z, .finishDrawDVs;if we're at wBuffer+2 then we can go ahead and finish up
 	
 	ld de, SlashText;we didn't finish, let's load the slash sign into memory
 	push bc;place string messes up our flags
+	push af;
 	call PlaceString;place the / on screen
+	pop af;
 	pop bc;bring back our flags
 	inc hl;for some reason PlaceString does not move where you're going to draw, so I had to move it one unit to the right manually
 	pop de;get back the location of the last DV we drew
