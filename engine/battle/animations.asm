@@ -472,22 +472,41 @@ AnimationTypePointerTable: ; 78dcf (1e:4dcf)
 
 ShakeScreenVertically: ; 78ddb (1e:4ddb)
 	call PlayApplyingAttackSound
+	ld a, [wOptions3]
+	bit 7, a
+	ld b, 3
+	jr nz, .shakeLight
 	ld b, 8
+.shakeLight
 	jp AnimationShakeScreenVertically
 
 ShakeScreenHorizontallyHeavy: ; 78de3 (1e:4de3)
 	call PlayApplyingAttackSound
+	ld a, [wOptions3]
+	bit 7, a
+	ld b, 3
+	jr nz, .shakeLight
 	ld b, 8
+.shakeLight
 	jp AnimationShakeScreenHorizontallyFast
 
 ShakeScreenHorizontallySlow: ; 78deb (1e:4deb)
-	lb bc, 6, 2
+	ld a, [wOptions3]
+	bit 7, a
+	ld b, 4
+	jr nz, .shakeLight
+	ld b, 2
+.shakeLight
+	ld c, 2
 	jr AnimationShakeScreenHorizontallySlow
 
 BlinkEnemyMonSprite: ; 78df0 (1e:4df0)
 	ld a, [wOptions]
 	bit 4, a
 	jr z, ShakeScreenHorizontallyLight
+	ld a, [wOptions3]
+	bit 7, a
+	jr nz, ShakeScreenHorizontallyLight
 	call PlayApplyingAttackSound
 	jp AnimationBlinkEnemyMon
 

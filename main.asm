@@ -5710,8 +5710,6 @@ Route12GateUpstairsBlocks:
 Route15GateUpstairsBlocks:
 Route11GateUpstairsBlocks: INCBIN "maps/route11gateupstairs.blk"
 
-INCLUDE "engine/predefs12.asm"
-
 INCLUDE "scripts/route7.asm"
 
 INCLUDE "data/mapHeaders/redshouse1f.asm"
@@ -5868,6 +5866,7 @@ INCLUDE "scripts/safarizonesecrethouse.asm"
 INCLUDE "data/mapObjects/safarizonesecrethouse.asm"
 SafariZoneSecretHouseBlocks: INCBIN "maps/safarizonesecrethouse.blk"
 
+INCLUDE "engine/predefs12.asm"
 
 SECTION "bank13",ROMX,BANK[$13]
 

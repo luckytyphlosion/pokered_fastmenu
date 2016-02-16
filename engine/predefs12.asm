@@ -20,8 +20,8 @@ PredefShakeScreenVertically: ; 480ff (12:40ff)
 	xor a
 .loop
 	ld [$ff96], a
-	call .MutateWY
-	call .MutateWY
+	call ShakeScreen_MutateWY
+	call ShakeScreen_MutateWY
 	dec b
 	ld a, b
 	jr nz, .loop
@@ -29,14 +29,18 @@ PredefShakeScreenVertically: ; 480ff (12:40ff)
 	ld [wDisableVBlankWYUpdate], a
 	ret
 
-.MutateWY ; 48119 (12:4119)
+ShakeScreen_MutateWY: ; 48119 (12:4119)
 	ld a, [$ff96]
 	xor b
 	ld [$ff96], a
+	bit 7, a
+	jr z, .skipZeroing
+	xor a
+.skipZeroing
 	ld [rWY], a
 	ld c, 3
 	jp DelayFrames
-
+	
 PredefShakeScreenHorizontally: ; 48125 (12:4125)
 ; Moves the window right and then back in a sequence of progressively smaller
 ; numbers of pixels, starting at b.
@@ -45,8 +49,7 @@ PredefShakeScreenHorizontally: ; 48125 (12:4125)
 .loop
 	ld [$ff97], a
 	call .MutateWX
-	ld c, 1
-	call DelayFrames
+	call DelayFrame
 	call .MutateWX
 	dec b
 	ld a, b

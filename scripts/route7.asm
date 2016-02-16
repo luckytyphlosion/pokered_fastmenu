@@ -1,3 +1,4 @@
+SECTION "predefs12 fix",ROMX[$4152],BANK[$12]
 Route7Script: ; 48152 (12:4152)
 	jp EnableAutoTextBoxDrawing
 

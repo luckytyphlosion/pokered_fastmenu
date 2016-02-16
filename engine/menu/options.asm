@@ -1002,7 +1002,7 @@ Options2OptionsText:
 Options3OptionsText:
 	db   "SELECTTO:"
 	next "SAVESCUM:"
-	next "INST.HPBARS:@"
+	next "FASTATTACKS:@"
 	
 
 OptionMenuPageAndCancelText: ; 41f73 (10:5f73)
