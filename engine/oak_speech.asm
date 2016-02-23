@@ -1,3 +1,4 @@
+SECTION "oak speech", ROMX[$6115],BANK[$1]
 OakSpeech: ; 6115 (1:6115)
 	ld a,$FF
 	call PlaySound ; stop music

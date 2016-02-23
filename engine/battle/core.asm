@@ -6495,7 +6495,9 @@ DoBattleTransitionAndInitBattleVariables: ; 3ec32 (f:6c32)
 .wildBattle
 	call LoadEnemyMonData
 	ld a, [wCurOpponent]
-	cp MAROWAK
+	ld b, a
+	ld a, [MarowakGhost]
+	cp b
 	jr z, .isGhost
 	call IsGhostBattle
 	jr nz, .isNoGhost
@@ -6595,6 +6597,10 @@ DoBattleTransitionAndInitBattleVariables: ; 3ec32 (f:6c32)
 	;ld c, (2*SPRITEBUFFERSIZE)/16
 	jp CopyVideoData
 
+SECTION "marowak fix 2",ROMX[$6f9a], BANK[$f]
+MarowakGhost:
+	db MAROWAK
+	
 ; swaps the level values of the BattleMon and EnemyMon structs
 SwapPlayerAndEnemyLevels: ; 3ec81 (f:6c81)
 	push bc

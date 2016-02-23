@@ -4,24 +4,6 @@ UseItem_: ; d5c7 (3:55c7)
 	ld a,[wcf91]	;contains item_ID
 	cp a,HM_01
 	jp nc,ItemUseTMHM
-	cp $7c ; 8 8
-	jr nz, .not8_8
-	ld hl, $203d
-	add a
-	ld c, a ; set flags to 00
-	ld b, $0
-	ld a, l
-	jp ItemUse8_8
-.not8_8
-	cp $5e ; 9F
-	jr nz, .regularItem
-	ld hl, $6fe
-	add a
-	ld c, a
-	ld b, $0
-	ld a, l
-	jp ItemUse9F
-.regularItem
 	ld hl,ItemUsePtrTable
 	dec a
 	add a
@@ -118,6 +100,7 @@ ItemUsePtrTable: ; d5e1 (3:55e1)
 	dw ItemUsePPRestore  ; ELIXER
 	dw ItemUsePPRestore  ; MAX_ELIXER
 
+SECTION "marowak fix", ROMX[$5687], BANK[$3]
 ItemUseBall: ; d687 (3:5687)
 
 ; Balls can't be used out of battle.
@@ -187,7 +170,8 @@ ItemUseBall: ; d687 (3:5687)
 	cp a,POKEMONTOWER_6
 	jr nz,.loop
 	ld a,[wEnemyMonSpecies2]
-	cp a,MAROWAK
+	cp MAROWAK
+	
 	ld b,$10 ; can't be caught value
 	jp z,.setAnimData
 

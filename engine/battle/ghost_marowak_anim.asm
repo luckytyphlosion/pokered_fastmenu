@@ -1,3 +1,4 @@
+SECTION "marowak fix 3", ROMX[$48ca], BANK[$1c]
 MarowakAnim: ; 708ca (1c:48ca)
 ; animate the ghost being unveiled as a Marowak
 	ld a, $e4
