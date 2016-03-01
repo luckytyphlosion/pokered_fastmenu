@@ -672,7 +672,7 @@ OptionsMenu_StartIn:
 	ld a, c
 	and a
 	jr nz, .noWrapAround2
-	ld c, 3 + 1
+	ld c, 4 + 1
 .noWrapAround2
 	dec c
 .continue
