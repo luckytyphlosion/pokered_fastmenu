@@ -2249,9 +2249,13 @@ UpdatePlayerSpriteMidDelay::
 	push bc
 	push de
 	call AdvancePlayerSprite
+	ld a, [wUpdateSpritesEnabled]
+	dec a
+	jr nz, .noSpriteUpdate
 	ld a, $10
 	ld [H_CURRENTSPRITEOFFSET], a
 	callab UpdatePlayerSprite
+.noSpriteUpdate
 	pop de
 	pop bc
 	pop hl
