@@ -220,3 +220,12 @@ CheaterPalettes_OBP0:
 
 CheaterPalettes_OBP1:
 	dw $7fff, $32bf, $00d0, $0000
+	
+PinkPalettes_BGP:
+	dw $53ff, $4a5f, $7e52, $0000
+
+PinkPalettes_OBP0:
+	dw $53ff, $4a5f, $7e52, $0000
+
+PinkPalettes_OBP1:
+	dw $53ff, $4a5f, $7e52, $0000	

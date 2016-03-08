@@ -339,7 +339,7 @@ OptionsMenu_Palette:
 REGULAR_OP_PAL EQU 0
 INVERTED_OP_PAL EQU 1
 CHEATER_OP_PAL EQU 2
-
+PINK_OP_PAL EQU 3
 	ld a, [wCurPalette]
 	ld c, a
 	ld a, [hJoy5]
@@ -350,7 +350,7 @@ CHEATER_OP_PAL EQU 2
 	jr .asm_41ce0
 .pressedRight
 	ld a, c
-	cp CHEATER_OP_PAL
+	cp PINK_OP_PAL
 	jr c, .noWrapAround
 	ld c, REGULAR_OP_PAL - 1
 .noWrapAround
@@ -360,7 +360,7 @@ CHEATER_OP_PAL EQU 2
 	ld a, c
 	and a
 	jr nz, .noWrapAround2
-	ld c, CHEATER_OP_PAL + 1
+	ld c, PINK_OP_PAL + 1
 .noWrapAround2
 	dec c
 .continue
@@ -383,6 +383,7 @@ PalStringsPointerTable:
 	dw Op_RegularPalText
 	dw Op_InvertedPalText
 	dw Op_CheaterPalText
+	dw Op_PinkPalText
 
 Op_RegularPalText:
 	db "REGULAR @"
@@ -390,6 +391,8 @@ Op_InvertedPalText:
 	db "INVERTED@"
 Op_CheaterPalText:
 	db "CHEATER @"
+Op_PinkPalText:
+	db "PINK    @"
 	
 OptionsMenu_Page:
 NUM_OPTION_PAGES EQU 3
