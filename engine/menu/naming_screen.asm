@@ -1,3 +1,6 @@
+EmptyFunc: ; 64ea (1:64ea)
+	ret
+
 AskName: ; 64eb (1:64eb)
 	call SaveScreenTilesToBuffer1
 	call GetPredefRegisters
