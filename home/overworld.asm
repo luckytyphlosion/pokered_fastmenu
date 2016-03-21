@@ -117,13 +117,6 @@ OverworldLoopNoDelay::
 	ld [hJoyHeld], a ; copy previous button presses from before
 	jp .checkIfDownButtonIsPressed
 .notSlipRunning
-	ld a, [hJoyHeld]
-	bit 1, a
-	jr nz, .doNotResetBFlag
-.resetBFlag
-	ld hl, wSlipRunningFlags
-	res 1, [hl]
-.doNotResetBFlag
 	ld a, [hJoyPressed]
 	bit 3,a ; start button
 	jr z,.startButtonNotPressed
@@ -469,9 +462,6 @@ InitSlipRun:
 	bit 1, a ; are we holding the B button?
 	ret z
 	ld hl, wSlipRunningFlags
-	bit 1, [hl]
-	set 1, [hl] ; have we slipran already and are still holding the B button?
-	ret nz
 	bit 0, [hl] ; are we already sliprunning?
 	jr nz, .doNotPlaySlipRunSound
 	set 0, [hl] ; indicate sliprunning

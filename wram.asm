@@ -2237,7 +2237,7 @@ wPrize3:: ; d13f
 
 wSlipRunningFlags::
 ; bit 0 = sliprunning
-; bit 1 = done slip running
+; bit 1 = done slip running (removed)
 ; bit 2 = done one iteration of sliprun
 ; bit 3 = advance player sprite during the 2nd delay frame of OverworldLoop
 ; bits 4-7 = saved joypad state
