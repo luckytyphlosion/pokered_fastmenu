@@ -28,6 +28,10 @@ sPlayTimeFrames:: ds 1
 sMoveUseRecord:: ds NUM_ATTACKS * 2
 sMoveUseRecordEnd::
 
+sNumSavescumResets:: ds 1
+sSavescumCooldownTimer1:: ds 2
+sSavescumCooldownTimer2:: ds 2
+
 SECTION "Saved Boxes 1", SRAM, BANK[2]
 
 sBox1:: ds wBoxDataEnd - wBoxDataStart ; a000

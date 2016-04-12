@@ -90,6 +90,9 @@ DontUpdateWY:
 	ld a, [wOptions3]
 	bit 6, a
 	jr z, .noSoftReset
+	ld a, [wIsSaveScumMode]
+	and a
+	jr z, .noSoftReset
 	ld hl, wSRAMBank
 	ld a, [hli] ; go to enable status
 	cp $1

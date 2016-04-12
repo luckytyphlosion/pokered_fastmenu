@@ -12,6 +12,7 @@ TrackPlayTime: ; 18dee (6:4dee)
 	ld a, $1
 	ld [MBC1SRamBank], a
 	call TrackPlayTime_
+	call DecrementSavescumTimer
 	ld hl, sPlayTimeHours
 	ld bc, (wPlayTimeFrames + 1) - wPlayTimeHours
 	ld de, wPlayTimeHours
@@ -22,6 +23,31 @@ TrackPlayTime: ; 18dee (6:4dee)
 	ld [MBC1SRamEnable], a
 	ret
 
+DecrementSavescumTimer:
+	ld a, [wOptions3]
+	bit 6, a
+	ret z
+	ld a, [sMainData + (wOptions3 - wMainDataStart)]
+	bit 6, a
+	ret z
+	ld hl, sNumSavescumResets
+	ld a, [hli]
+	cp 5
+	ret c
+	ld a, [hli]
+	or [hl]
+	jr z, .resetCount
+	dec [hl]
+	ret nz
+	dec hl
+	dec [hl]
+	ret
+.resetCount
+	dec hl
+	dec hl
+	ld [hl], $0
+	ret
+	
 TrackPlayTime_:
 	ld a, [sPlayTimeMinutes]
 	and a

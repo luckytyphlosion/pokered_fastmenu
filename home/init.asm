@@ -10,9 +10,36 @@ SoftReset::
 	call EnableSRAMAndSwitchSRAMBank
 	ld a, [sMainData + (wOptions3 - wMainDataStart)]
 	bit 6, a ; is save scum mode set in player save as well?
+	jr z, .disableSRAM
+	ld hl, sNumSavescumResets
+	ld a, [hl]
+	inc a
+	cp 20
+	jr z, .writeCooldownTimer
+	jr nc, .disableSRAM
+	ld [hli], a
+	cp 5
+	jr c, .disableSRAMWithDelayFrame
+; three minute cooldown, reset every time the player resets
+	ld a, 10800 / $100
+	ld [hli], a
+	ld [hl], 10800 & $ff
+	jr .disableSRAMWithDelayFrame
+.writeCooldownTimer
+	inc hl
+	ld a, 36000 / $100
+	ld [hli], a
+	ld a, 36000 & $ff
+	ld [hld], a
+	dec hl
+	inc [hl]
+	jr .disableSRAM
+.disableSRAMWithDelayFrame
+	call DisableSRAMAndSwitchSRAMBank0
 	ld c, 1
-	call DisableSRAMAndSwitchSRAMBank0 ; flags preserved
-	jr nz, .saveScumMode	
+	jr .saveScumMode
+.disableSRAM
+	call DisableSRAMAndSwitchSRAMBank0
 .noConsideringSaveScumMode
 	ld c, 32
 .saveScumMode
@@ -230,6 +257,9 @@ AfterInitSRAMChecks:
 	ld a, $1
 	call EnableSRAMAndSwitchSRAMBank
 	and a ; clear carry
+	ld a, [sNumSavescumResets]
+	cp 20
+	jr z, .resetCarry
 	ld a, [sMainData + (wOptions3 - wMainDataStart)]
 	bit 6, a
 	call DisableSRAMAndSwitchSRAMBank0
@@ -239,4 +269,8 @@ AfterInitSRAMChecks:
 	ld a, 5
 	ld [hSoftReset], a
 	scf
+	ret
+.resetCarry
+	call DisableSRAMAndSwitchSRAMBank0
+	and a
 	ret
