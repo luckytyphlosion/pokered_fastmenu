@@ -827,11 +827,23 @@ OptionsMenu_InstHPBars:
 	ld a, [wOptions3]
 	xor %10000000
 	ld [wOptions3], a
+	push af
+	bit 7, a
+	ld a, [wOptions]
+	jr z, .resetMetronome
+; set metronome
+	set 5, a
+	jr .writeOptions
+.resetMetronome
+	res 5, a
+.writeOptions
+	ld [wOptions], a
+	pop af
 .noButtonsPressed
 	ld bc, $0
 	sla a
 	rl c
-	ld hl, MetronomeOptionStringsPointerTable
+	ld hl, FastAttacksOptionStringsPointerTable
 	add hl, bc
 	add hl, bc
 	ld e, [hl]
@@ -842,6 +854,16 @@ OptionsMenu_InstHPBars:
 	and a
 	ret
 
+FastAttacksOptionStringsPointerTable:
+	dw FastAttacksOff
+	dw FastAttacksOnWithMetronome
+	
+FastAttacksOff:
+	db "OFF  ",$7c,$7c,"             @"
+
+FastAttacksOnWithMetronome:
+	db "ON   ",$7c,$7c," METRONOME ON@"
+	
 OptionsMenu_Dummy: ; 41eab (10:5eab)
 	and a
 	ret

@@ -16,7 +16,86 @@ _AdvancePlayerSprite:: ; f010c (3c:410c)
 .afterUpdateMapCoords
 	ld a,[wWalkCounter] ; walking animation counter
 	cp a,$07
-	jp nz,.scrollBackgroundAndSprites
+	jr nz,.scrollBackgroundAndSprites
+	call AdvancePlayerSprite_FirstIteration
+.scrollBackgroundAndSprites
+; if this is the first iteration of the animation
+	ld a,[wSpriteStateData1 + 3] ; delta Y
+	add a
+	ld b,a
+	ld a,[wSpriteStateData1 + 5] ; delta X
+	add a
+	jr AdvancePlayerSprite_SpriteShiftLoopCommon
+
+_AdvancePlayerSpriteTwice:: ; f010c (3c:410c)
+	ld a,[wSpriteStateData1 + 3] ; delta Y
+	ld b,a
+	ld a,[wSpriteStateData1 + 5] ; delta X
+	ld c,a
+	ld hl, wWalkCounter ; walking animation counter
+	dec [hl]
+	dec [hl]
+	jr nz, .afterUpdateMapCoords
+; if it's the end of the animation, update the player's map coordinates
+	ld a,[wYCoord]
+	add b
+	ld [wYCoord],a
+	ld a,[wXCoord]
+	add c
+	ld [wXCoord],a
+; set wWalkCounter to 0
+.afterUpdateMapCoords
+	ld a,[wWalkCounter] ; walking animation counter
+	cp a,$06
+	jr nz,.scrollBackgroundAndSprites
+	call AdvancePlayerSprite_FirstIteration
+
+.scrollBackgroundAndSprites
+	ld a,[wSpriteStateData1 + 3] ; delta Y
+	add a
+	add a
+	ld b,a
+	ld a,[wSpriteStateData1 + 5] ; delta X
+	add a
+	add a
+AdvancePlayerSprite_SpriteShiftLoopCommon:
+	ld c,a
+; shift all the sprites in the direction opposite of the player's motion
+; so that the player appears to move relative to them
+	ld hl,wSpriteStateData1 + $14
+	ld e,15
+.spriteShiftLoop
+	ld a,[hl]
+	sub b
+	ld [hli],a
+	inc l
+	ld a,[hl]
+	sub c
+	ld [hl],a
+	ld a,$0e
+	add l
+	ld l,a
+	dec e
+	jr nz,.spriteShiftLoop
+	ld a,[hSCY]
+	add b
+	ld [hSCY],a ; update background scroll Y
+	ld a,[hSCX]
+	add c
+	ld [hSCX],a ; update background scroll X
+	ld a, [wSlipRunningFlags]
+	bit 3, a ; double speed?
+	ret z
+	ld a, [wWalkCounter]
+	and a
+	ld a, $0
+	jr nz, .walkCounterDidNotHitZero
+	inc a
+.walkCounterDidNotHitZero
+	ld [wWalkCounterHitZero], a
+	ret
+	
+AdvancePlayerSprite_FirstIteration:
 ; if this is the first iteration of the animation
 	ld a,c
 	cp a,$01
@@ -131,71 +210,17 @@ _AdvancePlayerSprite:: ; f010c (3c:410c)
 	call LoadCurrentMapView
 	ld a,[wSpriteStateData1 + 3] ; delta Y
 	cp $1
-	jr nz,.checkIfMovingNorth2
-; if moving south
-	call ScheduleSouthRowRedraw
-	jr .scrollBackgroundAndSprites
-.checkIfMovingNorth2
+	jp z, ScheduleSouthRowRedraw ; if moving south
 	cp $ff
-	jr nz,.checkIfMovingEast2
-; if moving north
-	call ScheduleNorthRowRedraw
-	jr .scrollBackgroundAndSprites
-.checkIfMovingEast2
-	ld a,[wSpriteStateData1 + 5] ; delta X
+	jp z, ScheduleNorthRowRedraw ; if moving north
+	
+	ld a, [wSpriteStateData1 + 5] ; delta X
 	cp $1
-	jr nz,.checkIfMovingWest2
-; if moving east
-	call ScheduleEastColumnRedraw
-	jr .scrollBackgroundAndSprites
-.checkIfMovingWest2
+	jp z, ScheduleEastColumnRedraw ; if moving east
 	cp $ff
-	jr nz,.scrollBackgroundAndSprites
-; if moving west
-	call ScheduleWestColumnRedraw
-.scrollBackgroundAndSprites
-	ld a,[wSpriteStateData1 + 3] ; delta Y
-	add a
-	ld b,a
-	ld a,[wSpriteStateData1 + 5] ; delta X
-	add a
-	ld c,a
-; shift all the sprites in the direction opposite of the player's motion
-; so that the player appears to move relative to them
-	ld hl,wSpriteStateData1 + $14
-	ld e,15
-.spriteShiftLoop
-	ld a,[hl]
-	sub b
-	ld [hli],a
-	inc l
-	ld a,[hl]
-	sub c
-	ld [hl],a
-	ld a,$0e
-	add l
-	ld l,a
-	dec e
-	jr nz,.spriteShiftLoop
-.done
-	ld a,[hSCY]
-	add b
-	ld [hSCY],a ; update background scroll Y
-	ld a,[hSCX]
-	add c
-	ld [hSCX],a ; update background scroll X
-	ld a, [wSlipRunningFlags]
-	bit 3, a ; double speed?
-	ret z
-	ld a, [wWalkCounter]
-	and a
-	ld a, $0
-	jr nz, .walkCounterDidNotHitZero
-	inc a
-.walkCounterDidNotHitZero
-	ld [wWalkCounterHitZero], a
+	jp z, ScheduleWestColumnRedraw ; if moving west
 	ret
-
+	
 MoveTileBlockMapPointerEast:: ; f0248 (3c:4248)
 	ld a,[de]
 	add $1

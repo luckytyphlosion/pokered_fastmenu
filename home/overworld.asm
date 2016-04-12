@@ -336,11 +336,14 @@ OverworldLoopNoDelay::
 	bit 6,a ; jumping a ledge?
 	jr nz,.normalPlayerSpriteAdvancement
 	call BikeSpeedup ; if riding a bike and not jumping a ledge
+	jr c, .alreadyAdvancedPlayerSprite
 .normalPlayerSpriteAdvancement
 	call AdvancePlayerSprite
+.alreadyAdvancedPlayerSprite
 	ld a,[wWalkCounter]
 	and a
-	jp nz,CheckMapConnections ; it seems like this check will never succeed (the other place where CheckMapConnections is run works)
+	jp nz, OverworldLoop
+	;jp nz,CheckMapConnections ; it seems like this check will never succeed (the other place where CheckMapConnections is run works)
 ; walking animation finished
 .walkingAnimationFinished
 	ld a,[wd730]
@@ -449,7 +452,9 @@ BikeSpeedup:: ; 06a0 (0:06a0)
 	and a,D_UP | D_LEFT | D_RIGHT
 	ret nz
 .goFaster
-	jp AdvancePlayerSprite
+	callab _AdvancePlayerSpriteTwice
+	scf
+	ret
 
 InitSlipRun:
 	ld a, [wOptions2]
@@ -586,6 +591,7 @@ WarpFound2:: ; 073c (0:073c)
 	call GBFadeOutToBlack
 .notRockTunnel
 	call PlayMapChangeSound
+	jr .done
 	jr .done
 ; for maps that can have the 0xFF destination map, which means to return to the outside map; not all these maps are necessarily indoors, though
 .indoorMaps
@@ -2238,7 +2244,10 @@ UpdatePlayerSpriteMidDelay::
 	push hl
 	push bc
 	push de
+	call BikeSpeedup
+	jr c, .alreadyAdvancedSprite
 	call AdvancePlayerSprite
+.alreadyAdvancedSprite
 	ld a, [wUpdateSpritesEnabled]
 	dec a
 	jr nz, .noSpriteUpdate
