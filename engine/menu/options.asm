@@ -843,14 +843,30 @@ OptionsMenu_InstHPBars:
 	ld bc, $0
 	sla a
 	rl c
-	ld hl, FastAttacksOptionStringsPointerTable
+	ld hl, MetronomeOptionStringsPointerTable
 	add hl, bc
 	add hl, bc
 	ld e, [hl]
 	inc hl
 	ld d, [hl]
 	coord hl, 14, 6
+	push bc
 	call PlaceString
+	pop bc
+	ld hl, FastAttacksOptionStringsPointerTable
+	add hl, bc
+	add hl, bc
+	ld a, [hli]
+	ld d, [hl]
+	ld e, a
+	coord hl, 2, 7
+	ld a, [hFlags_0xFFF6]
+	push af
+	set 2, a
+	ld [hFlags_0xFFF6], a
+	call PlaceString
+	pop af
+	ld [hFlags_0xFFF6], a
 	and a
 	ret
 
@@ -859,10 +875,20 @@ FastAttacksOptionStringsPointerTable:
 	dw FastAttacksOnWithMetronome
 	
 FastAttacksOff:
-	db "OFF  ",$7c,$7c,"             @"
-
+	db "            "
+	next "              "
+	next "              "
+	next "           "
+	next "               "
+	next "                @"
+	
 FastAttacksOnWithMetronome:
-	db "ON   ",$7c,$7c," METRONOME ON@"
+	db "METRONOME ON"
+	next "fastattacks is"
+	next "bad and people"
+	next "who like it"
+	next "should feel bad"
+	next "- dabomstew 2016@"
 	
 OptionsMenu_Dummy: ; 41eab (10:5eab)
 	and a
