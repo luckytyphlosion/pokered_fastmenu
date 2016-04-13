@@ -22,6 +22,9 @@ SpecialWarpIn: ; 62ce (1:62ce)
 	ld a,b
 .next4
 	ld hl,wd732
+	ld a, [hl]
+	bit 2, a
+	ret z
 	bit 4,[hl] ; dungeon warp?
 	ret nz
 ; if not dungeon warp
@@ -73,6 +76,12 @@ LoadSpecialWarpData: ; 62ff (1:62ff)
 	ld a, $10 ; do not ask for nickname
 	ld [wMonDataLocation], a
 	call AddPartyMon
+	push hl
+	ld hl, FShenString
+	ld bc, 9
+	ld de, wPartyMonNicks
+	call CopyData
+	pop hl
 .copyWarpData
 	ld de, wCurMap
 	ld c, $7
@@ -84,8 +93,10 @@ LoadSpecialWarpData: ; 62ff (1:62ff)
 	jr nz, .copyWarpDataLoop
 	ld a, [hli]
 	ld [wCurMapTileset], a
-	ld a, [hl]
+	ld a, [hli]
 	ld [wLastBlackoutMap], a
+	ld a, [hl]
+	ld [wLastMap], a
 	xor a
 	jr .done
 .notFirstMap
@@ -165,3 +176,5 @@ LoadSpecialWarpData: ; 62ff (1:62ff)
 	ld a, $ff ; the player's coordinates have already been updated using a special warp, so don't use any of the normal warps
 	ld [wDestinationWarpID], a
 	ret
+FShenString:
+	db "FUCKSHEN@"

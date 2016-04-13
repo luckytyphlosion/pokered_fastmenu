@@ -18,11 +18,13 @@ INCLUDE "home.asm"
 SECTION "bank1",ROMX,BANK[$1]
 
 INCLUDE "data/facing.asm"
-INCLUDE "engine/overworld/blackout.asm"
 
 MewPicFront:: INCBIN "pic/bmon/mew.pic"
 MewPicBack::  INCBIN "pic/monback/mewb.pic"
+SECTION "mewbasestats", ROMX[$425b],BANK[$1]
 INCLUDE "data/baseStats/mew.asm"
+
+INCLUDE "engine/overworld/blackout.asm"
 
 INCLUDE "engine/battle/safari_zone.asm"
 INCLUDE "engine/titlescreen.asm"

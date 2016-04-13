@@ -42,10 +42,12 @@ MapSpecPointers:
 ;	FLYWARP_DATA [Map Width][Y-pos][X-pos]
 ;	db Tileset_id
 ;	db wLastBlackoutMap
+;	db wLastMap
 FirstMapSpec: ; 6420 (1:6420)
 	db REDS_HOUSE_2F
 	FLYWARP_DATA REDS_HOUSE_2F_WIDTH,6,3
 	db REDS_HOUSE_2
+	db PALLET_TOWN
 	db PALLET_TOWN
 
 EeveeHouseSpec:
@@ -53,11 +55,13 @@ EeveeHouseSpec:
 	FLYWARP_DATA CELADON_MANSION_5_WIDTH,3,5
 	db HOUSE
 	db CELADON_CITY
+	db CELADON_CITY
 	
 LaprasRoomSpec:
 	db SILPH_CO_7F
 	FLYWARP_DATA SILPH_CO_7F_WIDTH,5,2
 	db FACILITY
+	db SAFFRON_CITY
 	db SAFFRON_CITY
 	
 SafariZoneSpec:
@@ -65,11 +69,13 @@ SafariZoneSpec:
 	FLYWARP_DATA FUCHSIA_CITY_WIDTH,4,18
 	db OVERWORLD
 	db FUCHSIA_CITY
+	db FUCHSIA_CITY
 	
 Tower7Spec:
 	db POKEMONTOWER_7
 	FLYWARP_DATA POKEMONTOWER_7_WIDTH,4,10
 	db CEMETERY
+	db LAVENDER_TOWN
 	db LAVENDER_TOWN
 	
 ;Format:

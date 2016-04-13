@@ -260,6 +260,7 @@ AfterInitSRAMChecks:
 	ld a, [sNumSavescumResets]
 	cp 20
 	jr z, .resetCarry
+	and a
 	ld a, [sMainData + (wOptions3 - wMainDataStart)]
 	bit 6, a
 	call DisableSRAMAndSwitchSRAMBank0
