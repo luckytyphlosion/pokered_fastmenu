@@ -952,18 +952,6 @@ ReloadMapData:: ; 3071 (0:3071)
 	pop af
 	jp BankswitchCommon
 
-; reloads tileset tile patterns
-ReloadTilesetTilePatterns:: ; 3090 (0:3090)
-	ld a,[H_LOADEDROMBANK]
-	push af
-	ld a,[wCurMap]
-	call SwitchToMapRomBank
-	call DisableLCD
-	call LoadTilesetTilePatternData
-	call EnableLCD
-	pop af
-	jp BankswitchCommon
-
 ;INCLUDE "data/collision.asm"
 
 INCLUDE "home/copy2.asm"
@@ -975,6 +963,18 @@ INCLUDE "home/fade.asm"
 INCLUDE "home/serial.asm"
 INCLUDE "home/timer.asm"
 INCLUDE "home/audio.asm"
+
+; reloads tileset tile patterns
+ReloadTilesetTilePatterns:: ; 3090 (0:3090)
+	ld a,[H_LOADEDROMBANK]
+	push af
+	ld a,[wCurMap]
+	call SwitchToMapRomBank
+	call DisableLCD
+	call LoadTilesetTilePatternData
+	call EnableLCD
+	pop af
+	jp BankswitchCommon
 
 
 UpdateSprites:: ; 2429 (0:2429)
@@ -2638,6 +2638,17 @@ DecodeArrowMovementRLE:: ; 3442 (0:3442)
 	inc hl
 	jr DecodeArrowMovementRLE
 
+SECTION "bwexp fix isiteminbag", ROM0[$3493]
+IsItemInBag:: ; 3493 (0:3493)
+; given an item_id in b
+; set zero flag if item isn't in player's bag
+; else reset zero flag
+; related to Pokémon Tower and ghosts
+	predef GetQuantityOfItemInBag
+	ld a,b
+	and a
+	ret
+
 FuncTX_ItemStoragePC:: ; 3460 (0:3460)
 	call SaveScreenTilesToBuffer2
 	ld b, BANK(PlayerPC)
@@ -2663,17 +2674,6 @@ FuncTX_PokemonCenterPC:: ; 347f (0:347f)
 	ld b, BANK(ActivatePC)
 	ld hl, ActivatePC
 	jr bankswitchAndContinue
-
-SECTION "bwexp fix isiteminbag", ROM0[$3493]
-IsItemInBag:: ; 3493 (0:3493)
-; given an item_id in b
-; set zero flag if item isn't in player's bag
-; else reset zero flag
-; related to Pokémon Tower and ghosts
-	predef GetQuantityOfItemInBag
-	ld a,b
-	and a
-	ret
 
 DisplayPokedex:: ; 349b (0:349b)
 	ld [wd11e], a
@@ -3263,47 +3263,6 @@ GetName:: ; 376b (0:376b)
 	pop af
 	jp BankswitchCommon
 
-GetItemPrice:: ; 37df (0:37df)
-; Stores item's price as BCD at hItemPrice (3 bytes)
-; Input: [wcf91] = item id
-	ld a, [H_LOADEDROMBANK]
-	push af
-	ld a, [wListMenuID]
-	cp MOVESLISTMENU
-	ld a, BANK(ItemPrices)
-	jr nz, .asm_37ed
-	ld a, $f ; hardcoded Bank
-.asm_37ed
-	call BankswitchCommon
-	ld hl, wItemPrices
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
-	ld a, [wcf91] ; a contains item id
-	cp HM_01
-	jr nc, .getTMPrice
-	ld bc, $3
-.asm_3802
-	add hl, bc
-	dec a
-	jr nz, .asm_3802
-	dec hl
-	ld a, [hld]
-	ld [hItemPrice + 2], a
-	ld a, [hld]
-	ld [hItemPrice + 1], a
-	ld a, [hl]
-	ld [hItemPrice], a
-	jr .asm_381c
-.getTMPrice
-	ld a, Bank(GetMachinePrice)
-	call BankswitchCommon
-	call GetMachinePrice
-.asm_381c
-	ld de, hItemPrice
-	pop af
-	jp BankswitchCommon
-
 ; this function is used when lower button sensitivity is wanted (e.g. menus)
 ; OUTPUT: [hJoy5] = pressed buttons in usual format
 ; there are two flags that control its functionality, [hJoy6] and [hJoy7]
@@ -3418,14 +3377,6 @@ WaitForTextScrollButtonPress:: ; 3865 (0:3865)
 	ld [H_DOWNARROWBLINKCNT1], a
 	ret
 
-StartSimulatingJoypadStates:: ; 3486 (0:3486)
-	xor a
-	ld [wOverrideSimulatedJoypadStatesMask], a
-	ld [wSpriteStateData2 + $06], a ; player's sprite movement byte 1
-	ld hl, wd730
-	set 7, [hl]
-	ret
-
 SECTION "bwexpfix", ROM0 [$38ac]
 ; function to do multiplication
 ; all values are big endian
@@ -3517,6 +3468,55 @@ PrintLetterDelayDone:
 	pop hl
 	pop bc
 	ret
+
+StartSimulatingJoypadStates:: ; 3486 (0:3486)
+	xor a
+	ld [wOverrideSimulatedJoypadStatesMask], a
+	ld [wSpriteStateData2 + $06], a ; player's sprite movement byte 1
+	ld hl, wd730
+	set 7, [hl]
+	ret
+
+GetItemPrice:: ; 37df (0:37df)
+; Stores item's price as BCD at hItemPrice (3 bytes)
+; Input: [wcf91] = item id
+	ld a, [H_LOADEDROMBANK]
+	push af
+	ld a, [wListMenuID]
+	cp MOVESLISTMENU
+	ld a, BANK(ItemPrices)
+	jr nz, .asm_37ed
+	ld a, $f ; hardcoded Bank
+.asm_37ed
+	call BankswitchCommon
+	ld hl, wItemPrices
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	ld a, [wcf91] ; a contains item id
+	cp HM_01
+	jr nc, .getTMPrice
+	ld bc, $3
+.asm_3802
+	add hl, bc
+	dec a
+	jr nz, .asm_3802
+	dec hl
+	ld a, [hld]
+	ld [hItemPrice + 2], a
+	ld a, [hld]
+	ld [hItemPrice + 1], a
+	ld a, [hl]
+	ld [hItemPrice], a
+	jr .asm_381c
+.getTMPrice
+	ld a, Bank(GetMachinePrice)
+	call BankswitchCommon
+	call GetMachinePrice
+.asm_381c
+	ld de, hItemPrice
+	pop af
+	jp BankswitchCommon
 
 ; (unless in link battle) waits for A or B being pressed and outputs the scrolling sound effect
 ManualTextScroll:: ; 3898 (0:3898)
@@ -4176,13 +4176,8 @@ PrintText_NoCreatingTextBox:: ; 3c59 (0:3c59)
 
 
 PrintNumber:: ; 3c5f
-; Print the c-digit, b-byte value at de.
-; Allows 2 to 7 digits. For 1-digit numbers, add
-; the value to char "0" instead of calling PrintNumber.
-; Flags LEADING_ZEROES and LEFT_ALIGN can be given
-; in bits 7 and 6 of b respectively.
-	push bc
-	xor a
+; copy data into buffers before bankswitching for actual printing
+    xor a
 	ld [H_PASTLEADINGZEROES], a
 	ld [H_NUMTOPRINT], a
 	ld [H_NUMTOPRINT + 1], a
@@ -4196,106 +4191,21 @@ PrintNumber:: ; 3c5f
 	ld a, [de]
 	ld [H_NUMTOPRINT], a
 	inc de
-	ld a, [de]
-	ld [H_NUMTOPRINT + 1], a
-	inc de
-	ld a, [de]
-	ld [H_NUMTOPRINT + 2], a
-	jr .start
-
 .word
 	ld a, [de]
 	ld [H_NUMTOPRINT + 1], a
 	inc de
-	ld a, [de]
-	ld [H_NUMTOPRINT + 2], a
-	jr .start
-
 .byte
 	ld a, [de]
 	ld [H_NUMTOPRINT + 2], a
-
 .start
-	push de
-
-	ld d, b
-	ld a, c
-	ld b, a
-	xor a
-	ld c, a
-	ld a, b
-
-	cp 2
-	jr z, .tens
-	cp 3
-	jr z, .hundreds
-	cp 4
-	jr z, .thousands
-	cp 5
-	jr z, .ten_thousands
-	cp 6
-	jr z, .hundred_thousands
-
-print_digit: macro
-
-if (\1) / $10000
-	ld a, \1 / $10000 % $100
-else	xor a
-endc
-	ld [H_POWEROFTEN + 0], a
-
-if (\1) / $100
-	ld a, \1 / $100   % $100
-else	xor a
-endc
-	ld [H_POWEROFTEN + 1], a
-
-	ld a, \1 / $1     % $100
-	ld [H_POWEROFTEN + 2], a
-
-	call .PrintDigit
-	call .NextDigit
-endm
-
-.millions          print_digit 1000000
-.hundred_thousands print_digit 100000
-.ten_thousands     print_digit 10000
-.thousands         print_digit 1000
-.hundreds          print_digit 100
-
-.tens
-	ld c, 0
-	ld a, [H_NUMTOPRINT + 2]
-.mod
-	cp 10
-	jr c, .ok
-	sub 10
-	inc c
-	jr .mod
-.ok
-
-	ld b, a
-	ld a, [H_PASTLEADINGZEROES]
-	or c
-	ld [H_PASTLEADINGZEROES], a
-	jr nz, .past
-	call .PrintLeadingZero
-	jr .next
-.past
-	ld a, "0"
-	add c
-	ld [hl], a
-.next
-
-	call .NextDigit
-.ones
-	ld a, "0"
-	add b
-	ld [hli], a
-	pop de
-	dec de
-	pop bc
-	ret
+	ld a, [H_LOADEDROMBANK]
+	push af
+	ld a, BANK(_PrintNumber)
+	call BankswitchCommon
+	call _PrintNumber
+	pop af
+	jp BankswitchCommon
 
 .PrintDigit:
 ; Divide by the current decimal place.

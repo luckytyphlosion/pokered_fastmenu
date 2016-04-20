@@ -2244,8 +2244,15 @@ UpdatePlayerSpriteMidDelay::
 	push hl
 	push bc
 	push de
+	ld a,[wWalkBikeSurfState]
+	dec a ; riding a bike?
+	jr nz,.normalPlayerSpriteAdvancement
+	ld a,[wd736]
+	bit 6,a ; jumping a ledge?
+	jr nz,.normalPlayerSpriteAdvancement
 	call BikeSpeedup
 	jr c, .alreadyAdvancedSprite
+.normalPlayerSpriteAdvancement
 	call AdvancePlayerSprite
 .alreadyAdvancedSprite
 	ld a, [wUpdateSpritesEnabled]

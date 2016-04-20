@@ -293,8 +293,7 @@ Char51:: ; 1ab4 (0:1ab4)
 	coord hl, 1, 13
 	lb bc, 4, 18
 	call ClearScreenArea
-	ld c,20
-	call DelayFrames
+	call DelayFrame
 	pop de
 	coord hl, 1, 14
 	jp PlaceNextChar_inc
@@ -308,8 +307,7 @@ Char49:: ; 1ad5 (0:1ad5)
 	coord hl, 1, 10
 	lb bc, 7, 18
 	call ClearScreenArea
-	ld c,20
-	call DelayFrames
+	call DelayFrame
 	pop de
 	pop hl
 	coord hl, 1, 11
@@ -353,14 +351,8 @@ Next1B18:: ; 1b18 (0:1b18)
 	jr nz,.next2
 
 	; wait five frames
-	ld b,5
-.WaitFrame
-	call DelayFrame
-	dec b
-	jr nz,.WaitFrame
-
-	ret
-
+	jp DelayFrame
+	
 ProtectedDelay3:: ; 1b3a (0:1b3a)
 	push bc
 	call DelayFrame

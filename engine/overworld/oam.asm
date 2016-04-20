@@ -168,9 +168,10 @@ _PrepareOAMData: ; 499b (1:499b)
 	ld h, wOAMBuffer / $100
  
 	ld de, $4 ; entry size
-	ld a, $a0
+	ld b, $a0
+	ld a, c
 .clearLoop
-	ld [hl], a
+	ld [hl], b
 	add hl, de
 	cp l
 	jr nz, .clearLoop

@@ -314,6 +314,14 @@ OptionsMenu_Metronome:
 	ld a, [wOptions]
 	xor %100000
 	ld [wOptions], a
+	push af
+	bit 5, a
+	jr nz, .doNotTurnFastAttacksOff
+	ld a, [wOptions3]
+	res 7, a
+	ld [wOptions3], a
+.doNotTurnFastAttacksOff
+	pop af
 .asm_41d3b
 	ld b, $0
 	swap a

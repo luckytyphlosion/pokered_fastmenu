@@ -494,9 +494,9 @@ ShakeScreenHorizontallySlow: ; 78deb (1e:4deb)
 	ld a, [wOptions3]
 	bit 7, a
 	ld b, 4
-	jr nz, .shakeLight
+	jr z, .shakeModerate
 	ld b, 2
-.shakeLight
+.shakeModerate
 	ld c, 2
 	jr AnimationShakeScreenHorizontallySlow
 
