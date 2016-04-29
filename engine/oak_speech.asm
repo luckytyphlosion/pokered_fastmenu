@@ -11,11 +11,8 @@ OakSpeech: ; 6115 (1:6115)
 	call SetDefaultNames
 	predef InitPlayerData2
 	ld hl,wNumBoxItems
-	ld a,POTION
-	ld [wcf91],a
-	ld a,1
-	ld [wItemQuantity],a
-	call AddItemToInventory  ; give one potion
+	ld a,POTION ;needs to still be here for the randomizer
+	call GiveBoxItems
 	ld a,[wDefaultMap]
 	ld [wDestinationMap],a
 	call SpecialWarpIn
@@ -32,7 +29,7 @@ OakSpeech: ; 6115 (1:6115)
 	call PrintText
 	call GBFadeOutToWhite
 	call ClearScreen
-	
+
 SECTION "intro pokemon",ROMX[$616c],BANK[$1]
 	ld a,NIDORINO
 	ld [wd0b5],a
@@ -246,3 +243,21 @@ SetDefaultNames: ; 60ca (1:60ca)
 	ld de, wRivalName
 	ld bc, NAME_LENGTH
 	jp CopyData
+
+SECTION "box pokedex", ROMX, BANK[$1]
+GiveBoxItems:
+	ld [wcf91],a
+	ld a,1
+	ld [wItemQuantity],a
+	call AddItemToInventory  ; give one potion
+	
+	;check if we're starting anywhere but normal
+	ld a, [wOptions3]
+	and $0f
+	ret z
+	ld a, POKEDEX
+	ld [wcf91],a
+	ld a,1
+	ld [wItemQuantity],a
+	call AddItemToInventory  ; give one pokedex
+	
