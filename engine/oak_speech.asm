@@ -260,4 +260,3 @@ GiveBoxItems:
 	ld a,1
 	ld [wItemQuantity],a
 	call AddItemToInventory  ; give one pokedex
-	
