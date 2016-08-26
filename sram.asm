@@ -28,9 +28,7 @@ sPlayTimeFrames:: ds 1
 sMoveUseRecord:: ds NUM_ATTACKS * 2
 sMoveUseRecordEnd::
 
-sNumSavescumResets:: ds 1
-sSavescumCooldownTimer1:: ds 2
-sSavescumCooldownTimer2:: ds 2
+sDidSoftReset:: ds 1
 
 SECTION "Saved Boxes 1", SRAM, BANK[2]
 

@@ -22,7 +22,7 @@ Predef::
 	ld [H_LOADEDROMBANK], a
 	ld [MBC1RomBank], a
 
-	call _hl_
+	call CallHL
 .done
 
 	pop af

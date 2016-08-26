@@ -2212,9 +2212,9 @@ SwitchToMapRomBank:: ; 12bc (0:12bc)
 	ld hl,MapHeaderBanks
 	add hl,bc
 	ld a,[hl]
-	ld [$ffe8],a ; save map ROM bank
+	push af
 	call BankswitchBack
-	ld a,[$ffe8]
+	pop af
 	call BankswitchCommon ; switch to map ROM bank
 	pop bc
 	pop hl

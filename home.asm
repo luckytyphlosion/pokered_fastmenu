@@ -94,10 +94,7 @@ FillMemory:: ; 0x3041
 	dec b
 	jr nz, .PutByte
 	ret
-
-_hl_:
-	jp [hl]
-
+	
 SECTION "Entry", ROM0 [$100]
 
 	nop
@@ -113,7 +110,7 @@ SECTION "Header", ROM0 [$104]
 
 
 
-SECTION "Main", ROM0
+SECTION "Main", ROM0 [$150]
 
 Start::
 	cp GBC
@@ -126,6 +123,7 @@ Start::
 	ld [wGBC], a
 	jp Init
 
+SECTION "read joypad", ROM0 [$15f]
 
 INCLUDE "home/joypad.asm"
 INCLUDE "data/map_header_pointers.asm"
@@ -2928,14 +2926,16 @@ Bankswitch:: ; 35d6 (0:35d6)
 	ld a,b
 	ld [H_LOADEDROMBANK],a
 	ld [MBC1RomBank],a
-	call _hl_
+	call CallHL
 	pop bc
 	ld a,b
 BankswitchCommon:
 	ld [H_LOADEDROMBANK],a
 	ld [MBC1RomBank],a
 	ret
-
+CallHL:
+	jp [hl]
+	
 EnableSRAMAndSwitchSRAMBank:
 	push af
 	ld a, SRAM_ENABLE
@@ -4318,7 +4318,7 @@ JumpTable::
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	call _hl_
+	call CallHL
 .returnAddress
 	pop bc
 	pop de
@@ -4465,6 +4465,7 @@ Random::
 
 
 INCLUDE "home/predef.asm"
+INCLUDE "home/checksum.asm"
 
 PlayCry:: ; 13d0 (0:13d0)
 ; Play monster a's cry.
@@ -4490,7 +4491,7 @@ CheckForHiddenObjectOrBookshelfOrCardKeyDoor:: ; 3eb5 (0:3eb5)
 	jr nz, .hiddenObjectNotFound
 	ld a, [wHiddenObjectFunctionRomBank]
 	call BankswitchCommon
-	call _hl_
+	call CallHL
 .returnAddress
 	xor a
 	jr .done

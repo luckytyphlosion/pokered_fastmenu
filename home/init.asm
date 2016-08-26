@@ -1,49 +1,13 @@
 SoftReset::
 	call StopAllSounds
 	call GBPalWhiteOut
-	ld a, [wOptions3]
-	bit 6, a
-	jr z, .noConsideringSaveScumMode
-	callab CheckForPlayerNameInSRAM
-	jr nc, .noConsideringSaveScumMode
+	ld c, 32
+	call DelayFrames
 	ld a, $1
 	call EnableSRAMAndSwitchSRAMBank
-	ld a, [sMainData + (wOptions3 - wMainDataStart)]
-	bit 6, a ; is save scum mode set in player save as well?
-	jr z, .disableSRAM
-	ld hl, sNumSavescumResets
-	ld a, [hl]
-	inc a
-	cp 20
-	jr z, .writeCooldownTimer
-	jr nc, .disableSRAM
-	ld [hli], a
-	cp 5
-	jr c, .disableSRAMWithDelayFrame
-; three minute cooldown, reset every time the player resets
-	ld a, 10800 / $100
-	ld [hli], a
-	ld [hl], 10800 & $ff
-	jr .disableSRAMWithDelayFrame
-.writeCooldownTimer
-	inc hl
-	ld a, 36000 / $100
-	ld [hli], a
-	ld a, 36000 & $ff
-	ld [hld], a
-	dec hl
-	inc [hl]
-	jr .disableSRAM
-.disableSRAMWithDelayFrame
+	ld a, $1
+	ld [sDidSoftReset], a
 	call DisableSRAMAndSwitchSRAMBank0
-	ld c, 1
-	jr .saveScumMode
-.disableSRAM
-	call DisableSRAMAndSwitchSRAMBank0
-.noConsideringSaveScumMode
-	ld c, 32
-.saveScumMode
-	call DelayFrames
 	; fallthrough
 
 Init::
@@ -157,11 +121,11 @@ rLCDC_DEFAULT EQU %11100011
 	ld [rVBK], a
 
 	ld hl, $ff80
-	ld bc, $ffff - $ff80
+	ld bc, $fffe - $ff80
 	call FillMemory
 
 	call ClearSprites
-
+	
 	ld a, Bank(WriteDMACodeToHRAM)
 	ld [H_LOADEDROMBANK], a
 	ld [MBC1RomBank], a
@@ -217,8 +181,6 @@ rLCDC_DEFAULT EQU %11100011
 	
 	jr c, .skipIntroAndMainMenu
 	
-	;predef LoadSGB
-	
 	predef PlayIntro
 
 	call DisableLCD
@@ -227,10 +189,8 @@ rLCDC_DEFAULT EQU %11100011
 	call ClearSprites
 	ld a, rLCDC_DEFAULT
 	ld [rLCDC], a
-
-	jp SetDefaultNamesBeforeTitlescreen
 .skipIntroAndMainMenu
-	jp MainMenu
+	jp SetDefaultNamesBeforeTitlescreen
 	
 ClearVram:
 	ld hl, $8000
@@ -256,19 +216,17 @@ AfterInitSRAMChecks:
 	set 0, [hl]
 	ld a, $1
 	call EnableSRAMAndSwitchSRAMBank
-	and a ; clear carry
-	ld a, [sNumSavescumResets]
-	cp 20
-	jr z, .resetCarry
+	ld a, [sDidSoftReset]
 	and a
+	ld a, $0
+	ld [sDidSoftReset], a
+	jr z, .resetCarry
 	ld a, [sMainData + (wOptions3 - wMainDataStart)]
 	bit 6, a
-	call DisableSRAMAndSwitchSRAMBank0
-	ret z
-	ld a, $1
+	jr z, .resetCarry
+	xor a
 	ld [wIsSaveScumMode], a
-	ld a, 5
-	ld [hSoftReset], a
+	call DisableSRAMAndSwitchSRAMBank0
 	scf
 	ret
 .resetCarry

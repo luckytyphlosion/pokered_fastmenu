@@ -9,12 +9,7 @@ MainMenu: ; 5af2 (1:5af2)
 	jr nc,.mainMenuLoop
 	
 	predef LoadSAV
-	ld a, [wSaveFileStatus]
-	dec a
-	jr z, .mainMenuLoop ; no save file
-	ld a, [wIsSaveScumMode]
-	dec a
-	jp z, .skipMainMenu
+
 .mainMenuLoop
 	ld c,20
 	call DelayFrames
@@ -114,7 +109,6 @@ MainMenu: ; 5af2 (1:5af2)
 	ld c, 10
 	call DelayFrames
 	call ClearScreen
-.skipMainMenu
 	ld a,PLAYER_DIR_DOWN
 	ld [wPlayerDirection],a
 	ld a,[wNumHoFTeams]
@@ -324,10 +318,6 @@ StartNewGame: ; 5d52 (1:5d52)
 	ld hl, sPlayTimeHours
 	ld bc, sMoveUseRecordEnd - sPlayTimeHours
 	call FillMemory
-	ld hl, sNumSavescumResets
-	ld [hli], a
-	ld [hli], a
-	ld [hl], a
 	ld [MBC1SRamEnable], a
 	ld [wSRAMEnabled], a
 	ld hl, wd732

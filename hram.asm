@@ -314,6 +314,12 @@ hDividend2 EQU $FFE5
 hDivisor2  EQU $FFE6
 hQuotient2 EQU $FFE7
 
+; Initialized to 16.
+; Decremented each input iteration if the player
+; presses the reset sequence (A+B+SEL+START).
+; Soft reset when 0 is reached.
+hSoftReset EQU $FFE8
+
 hSpriteVRAMSlotAndFacing EQU $FFE9
 
 hCoordsInFrontOfPlayerMatch EQU $FFEA
@@ -336,8 +342,5 @@ hLastBGP EQU $FFFA
 hLastOBP0 EQU $FFFB
 hLastOBP1 EQU $FFFC
 hDoBattleTransition EQU $FFFD
-; Initialized to 16.
-; Decremented each input iteration if the player
-; presses the reset sequence (A+B+SEL+START).
-; Soft reset when 0 is reached.
-hSoftReset EQU $FFFE
+
+hChecksumMatches EQU $FFFE
