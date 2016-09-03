@@ -882,21 +882,12 @@ INCLUDE "engine/battle/scroll_draw_trainer_pic.asm"
 INCLUDE "engine/battle/trainer_ai.asm"
 INCLUDE "engine/battle/draw_hud_pokeball_gfx.asm"
 
-TradingAnimationGraphics:
-	INCBIN "gfx/game_boy.norepeat.2bpp"
-	INCBIN "gfx/link_cable.2bpp"
-TradingAnimationGraphicsEnd:
-
-TradingAnimationGraphics2:
-; Pokeball traveling through the link cable.
-	INCBIN "gfx/trade2.2bpp"
-TradingAnimationGraphics2End:
-
 INCLUDE "engine/evos_moves.asm"
 INCLUDE "engine/battle/moveEffects/heal_effect.asm"
 INCLUDE "engine/battle/moveEffects/transform_effect.asm"
 INCLUDE "engine/battle/moveEffects/reflect_light_screen_effect.asm"
 
+SECTION "extra bankE space", ROMX[$7bb6], BANK[$E]
 
 SECTION "bankF",ROMX,BANK[$F]
 
@@ -915,6 +906,16 @@ INCLUDE "engine/battle/decrement_pp.asm"
 INCLUDE "engine/overworld/advance_player_sprite.asm"
 INCLUDE "engine/overworld/engage_map_trainer.asm"
 INCLUDE "engine/print_number.asm"
+
+TradingAnimationGraphics:
+	INCBIN "gfx/game_boy.norepeat.2bpp"
+	INCBIN "gfx/link_cable.2bpp"
+TradingAnimationGraphicsEnd:
+
+TradingAnimationGraphics2:
+; Pokeball traveling through the link cable.
+	INCBIN "gfx/trade2.2bpp"
+TradingAnimationGraphics2End:
 
 SECTION "bank11",ROMX,BANK[$11]
 
