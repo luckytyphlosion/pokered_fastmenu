@@ -34,7 +34,7 @@ GBFadeIncCommon:
 	ld [rOBP0], a
 	ld a, [hli]
 	ld [rOBP1], a
-	ld c, 8
+	ld c, 4
 	call DelayFrames
 	dec b
 	jr nz, GBFadeIncCommon
@@ -56,7 +56,7 @@ GBFadeDecCommon:
 	ld [rOBP0], a
 	ld a, [hld]
 	ld [rBGP], a
-	ld c, 8
+	ld c, 4
 	call DelayFrames
 	dec b
 	jr nz, GBFadeDecCommon
