@@ -881,11 +881,11 @@ INCLUDE "engine/battle/unused_stats_functions.asm"
 INCLUDE "engine/battle/scroll_draw_trainer_pic.asm"
 INCLUDE "engine/battle/trainer_ai.asm"
 INCLUDE "engine/battle/draw_hud_pokeball_gfx.asm"
+INCLUDE "engine/battle/moveEffects/reflect_light_screen_effect.asm"
 
 INCLUDE "engine/evos_moves.asm"
 INCLUDE "engine/battle/moveEffects/heal_effect.asm"
 INCLUDE "engine/battle/moveEffects/transform_effect.asm"
-INCLUDE "engine/battle/moveEffects/reflect_light_screen_effect.asm"
 
 SECTION "extra bankE space", ROMX[$7bb6], BANK[$E]
 

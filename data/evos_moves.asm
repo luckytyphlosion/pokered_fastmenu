@@ -1,3 +1,4 @@
+SECTION "Evos Moves", ROMX[$705c], BANK[$E]
 EvosMovesPointerTable: ; 3b05c (e:705c)
 	dw Mon112_EvosMoves
 	dw Mon115_EvosMoves
