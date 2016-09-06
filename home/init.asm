@@ -1,8 +1,7 @@
 SoftReset::
 	call StopAllSounds
 	call GBPalWhiteOut
-	ld c, 32
-	call DelayFrames
+	call DelayFrame
 	ld a, $1
 	call EnableSRAMAndSwitchSRAMBank
 	ld a, $1
